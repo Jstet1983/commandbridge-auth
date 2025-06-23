@@ -1,0 +1,30 @@
+name: 🔐 Commit Logger to AtomVM
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  log_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 Checkout Code
+      uses: actions/checkout@v3
+
+    - name: 🧠 Log Commit SHA to AtomVM
+      run: |
+        echo "Commit by ${{ github.actor }} on ${{ github.event.head_commit.timestamp }}" >> commit.log
+        echo "Message: ${{ github.event.head_commit.message }}" >> commit.log
+        echo "SHA: ${{ github.sha }}" >> commit.log
+        echo "---" >> commit.log
+
+    - name: ☁️ SCP log to AtomVM
+      env:
+        VM_IP: 44.222.194.20
+        VM_USER: ubuntu
+      run: |
+        sudo apt-get update && sudo apt-get install -y openssh-client
+        echo "${{ secrets.ATOMVM_PRIVATE_KEY }}" > key.pem
+        chmod 600 key.pem
+        scp -o StrictHostKeyChecking=no -i key.pem commit.log $VM_USER@$VM_IP:/var/atom-core/logs/commit.log
