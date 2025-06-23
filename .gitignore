@@ -1,0 +1,1 @@
+*.pem\n*.key\n*.log\n*.bak\n*.tmp\n*.env\nsecrets/\nnode_modules/\n__pycache__/\n.DS_Store\n.idea/
